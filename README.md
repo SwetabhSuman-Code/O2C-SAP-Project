@@ -1,5 +1,7 @@
 # SAP O2C (Order-to-Cash) Capstone Project
 
+![SAP O2C Simulator Demo](docs/o2c_simulator_demo.webp)
+
 Welcome to the SAP SD Order-to-Cash Capstone Project repository. This project demonstrates the configuration, execution, and documentation of a complete sales lifecycle using the SAP Sales and Distribution (SD) module.
 
 ## Project Overview
