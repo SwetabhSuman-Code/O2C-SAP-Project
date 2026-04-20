@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Electronics O2C Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Aurora E-ERP <span>| SAP O2C Simulator</span></div>
+        <div class="user-profile">User: Capstone Reviewer</div>
+    </header>
+
+    <main class="dashboard">
+        <section class="overview">
+            <h1>Transaction Flow Dashboard</h1>
+            <p>Execute the Order-To-Cash cycle step-by-step. Click active cards to simulate system transactions.</p>
+        </section>
+
+        <section class="process-grid" id="process-grid">
+            <!-- Cards -->
+            <div class="card active" id="card-inquiry" onclick="openModal('modal-inquiry')">
+                <div class="card-icon">1</div>
+                <h3>Customer Inquiry</h3>
+                <p>Register customer interest</p>
+                <span class="status-badge pending">Pending</span>
+            </div>
+            
+            <div class="card disabled" id="card-quotation" onclick="openModal('modal-quotation')">
+                <div class="card-icon">2</div>
+                <h3>Quotation (VA21)</h3>
+                <p>Provide binding offer</p>
+                <span class="status-badge locked">Locked</span>
+            </div>
+
+            <div class="card disabled" id="card-order" onclick="openModal('modal-order')">
+                <div class="card-icon">3</div>
+                <h3>Sales Order (VA01)</h3>
+                <p>Create legal agreement</p>
+                <span class="status-badge locked">Locked</span>
+            </div>
+
+            <div class="card disabled" id="card-delivery" onclick="openModal('modal-delivery')">
+                <div class="card-icon">4</div>
+                <h3>Outbound Delivery (VL01N)</h3>
+                <p>Pick, pack & PGI</p>
+                <span class="status-badge locked">Locked</span>
+            </div>
+
+            <div class="card disabled" id="card-billing" onclick="openModal('modal-billing')">
+                <div class="card-icon">5</div>
+                <h3>Billing (VF01)</h3>
+                <p>Generate customer invoice</p>
+                <span class="status-badge locked">Locked</span>
+            </div>
+
+            <div class="card disabled" id="card-payment" onclick="openModal('modal-payment')">
+                <div class="card-icon">6</div>
+                <h3>Payment Receipt (F-28)</h3>
+                <p>Clear account receivable</p>
+                <span class="status-badge locked">Locked</span>
+            </div>
+        </section>
+
+        <section class="document-flow">
+            <h2>SAP Document Flow Trace</h2>
+            <ul id="doc-flow-list">
+                <li class="empty-state">No documents generated yet. Start with a Customer Inquiry.</li>
+            </ul>
+            <button class="btn-secondary" onclick="resetSimulator()">Reset Simulator</button>
+        </section>
+    </main>
+
+    <!-- Modal: Inquiry -->
+    <div class="modal-overlay" id="modal-inquiry">
+        <div class="modal-content glass">
+            <h2>Create Customer Inquiry (VA11)</h2>
+            <div class="form-group">
+                <label>Customer Number (Sold-To)</label>
+                <input type="text" id="inq-customer" value="1005230 (TechHaven)">
+            </div>
+            <div class="form-group">
+                <label>Material</label>
+                <select id="inq-material">
+                    <option value="AE-SPK-900">AE-SPK-900 (Aurora Smart Speaker Pro)</option>
+                    <option value="AE-LPT-50">AE-LPT-50 (Aurora EliteBook 15")</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Requested Quantity</label>
+                <input type="number" id="inq-qty" value="50">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('modal-inquiry')">Cancel</button>
+                <button class="btn-primary" onclick="submitInquiry()">Save Inquiry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Quotation -->
+    <div class="modal-overlay" id="modal-quotation">
+        <div class="modal-content glass">
+            <h2>Create Quotation (VA21)</h2>
+            <p class="reference-info">Referencing Inquiry: <span id="ref-inq-num"></span></p>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Valid To date</label>
+                    <input type="date" id="quot-date">
+                </div>
+                <div class="form-group">
+                    <label>Discount Offered (%)</label>
+                    <input type="number" id="quot-discount" value="10">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('modal-quotation')">Cancel</button>
+                <button class="btn-primary" onclick="submitQuotation()">Generate Quotation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Order -->
+    <div class="modal-overlay" id="modal-order">
+        <div class="modal-content glass">
+            <h2>Create Sales Order (VA01)</h2>
+            <p class="reference-info">Referencing Quotation: <span id="ref-quot-num"></span></p>
+            <div class="form-group">
+                <label>Customer PO Number</label>
+                <input type="text" id="so-po" value="TH-998822">
+            </div>
+            <div class="info-box">
+                <strong>ATP Check Passed:</strong> Stock is available in Plant 1100.
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('modal-order')">Cancel</button>
+                <button class="btn-primary" onclick="submitOrder()">Save Sales Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Delivery -->
+    <div class="modal-overlay" id="modal-delivery">
+        <div class="modal-content glass">
+            <h2>Outbound Delivery (VL01N / VL02N)</h2>
+            <p class="reference-info">Referencing Order: <span id="ref-so-num"></span></p>
+            <div class="form-group">
+                <label>Shipping Point</label>
+                <input type="text" value="1100 (New York DC)" readonly>
+            </div>
+            <div class="form-group">
+                <label>Picked Quantity</label>
+                <input type="number" id="del-pick-qty" readonly>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('modal-delivery')">Cancel</button>
+                <button class="btn-primary" onclick="submitDelivery()">Post Goods Issue (PGI)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Billing -->
+    <div class="modal-overlay" id="modal-billing">
+        <div class="modal-content glass">
+            <h2>Create Billing Document (VF01)</h2>
+            <p class="reference-info">Referencing Delivery: <span id="ref-del-num"></span></p>
+            <div class="invoice-summary">
+                <div class="flex-row"><span>Subtotal:</span> <span id="inv-sub">$0.00</span></div>
+                <div class="flex-row"><span>Tax (8%):</span> <span id="inv-tax">$0.00</span></div>
+                <hr>
+                <div class="flex-row heavy"><span>Total Due:</span> <span id="inv-tot">$0.00</span></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('modal-billing')">Cancel</button>
+                <button class="btn-primary" onclick="submitBilling()">Post Invoice to FI</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Payment -->
+    <div class="modal-overlay" id="modal-payment">
+        <div class="modal-content glass">
+            <h2>Post Incoming Payment (F-28)</h2>
+            <p class="reference-info">Clearing Invoice: <span id="ref-inv-num"></span></p>
+            <div class="form-group">
+                <label>Amount Received</label>
+                <input type="text" id="pay-amt" readonly>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('modal-payment')">Cancel</button>
+                <button class="btn-primary clear-btn" onclick="submitPayment()">Clear Customer Account</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
