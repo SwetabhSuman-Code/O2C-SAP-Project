@@ -1,0 +1,64 @@
+=======================================
+SAP O2C PROJECT - SAMPLE DATA
+=======================================
+
+1. ORGANIZATIONAL DATA
+---------------------------------------
+Sales Organization (VKORG): 1000 (Aurora US)
+Distribution Channel (VTWEG): 10 (Direct Sales), 20 (Wholesale)
+Division (SPART): 01 (Smart Home), 02 (Audio)
+Plant (WERKS): 1100 (New York Distribution Center)
+Shipping Point (VSTEL): 1100
+
+2. CUSTOMER MASTER DATA
+---------------------------------------
+Customer Number: 1005230
+Name: TechHaven Retail Group
+Address: 450 Tech Avenue, Silicon Valley, CA 95002
+Account Group: KUNA (Sold-to Party)
+Payment Terms: ZB01 (14 days 2%, 30 days net)
+Incoterms: FOB (Free On Board) / Location: San Francisco
+
+3. MATERIAL MASTER DATA
+---------------------------------------
+Material Number: AE-SPK-900
+Description: Aurora Smart Speaker Pro
+Material Type: FERT (Finished Product)
+Base Unit of Measure: EA (Each)
+Gross Weight: 1.5 KG
+Standard Price (PR00): $199.00 USD/EA
+
+Material Number: AE-LPT-50
+Description: Aurora EliteBook 15"
+Material Type: FERT (Finished Product)
+Base Unit of Measure: EA (Each)
+Gross Weight: 2.2 KG
+Standard Price (PR00): $1,250.00 USD/EA
+
+4. TRANSACTIONAL DATA WALKTHROUGH
+---------------------------------------
+INQUIRY:
+Inquiry Number: 10000012
+Date: 01-Nov-2026
+Requested: 50 EA of AE-SPK-900
+
+QUOTATION:
+Quotation Number: 20000045 (Ref to 10000012)
+Valid to: 15-Nov-2026
+Price Offered: $185.00 USD/EA (discounted)
+
+SALES ORDER:
+Order Number: 14502
+PO Number: TH-998822
+Ordered: 50 EA of AE-SPK-900 at $185.00 USD/EA
+Requested Delivery Date: 10-Nov-2026
+
+DELIVERY:
+Delivery Number: 80010255
+Picked Qty: 50 EA
+PGI Date: 08-Nov-2026
+
+BILLING:
+Invoice Number: 90034110
+Invoice Total: $9,250.00 USD (plus applicable taxes)
+Accounting Doc: 10002245 (Debiting Customer 1005230, Crediting Revenue)
